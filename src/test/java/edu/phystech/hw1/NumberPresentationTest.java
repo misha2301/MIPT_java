@@ -6,15 +6,15 @@ import org.junit.jupiter.api.Assertions;
 public class NumberPresentationTest {
 
     private static String toBinary(int x) {
-        return "";
+        return Integer.toBinaryString(x);
     }
 
     private static String toOct(int x) {
-        return "";
+        return Integer.toOctalString(x);
     }
 
     private static String toHex(int x) {
-        return "";
+        return Integer.toHexString(x);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class NumberPresentationTest {
     @Test
     public void octPresentation() {
         for (int i = 0; i < 8; ++i) {
-            Assertions.assertEquals(String.valueOf(i), toHex(i));
+            Assertions.assertEquals(String.valueOf(i), toOct(i));
         }
 
         Assertions.assertEquals("10", toOct(8));
@@ -62,6 +62,7 @@ public class NumberPresentationTest {
 
         Assertions.assertEquals("45b0c2", toHex(4567234));
     }
+
 
 }
 
