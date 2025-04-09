@@ -1,6 +1,5 @@
 package edu.phystech.hw2;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BinaryOperator;
@@ -12,86 +11,90 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-class ToUpperCaseOperator implements UnaryOperator<String> {
+// Преобразует строку в верхний регистр
+class Capitalizer implements UnaryOperator<String> {
     @Override
-    public String apply(String s) {
-        return s;
+    public String apply(String input) {
+        return input.toUpperCase();
     }
 }
 
-// Возвращает модуль максимума из двух модулей чисел
-class AbsMaxOperator implements BinaryOperator<Integer> {
-
+// Возвращает большее абсолютное значение из двух чисел
+class AbsoluteMaxFinder implements BinaryOperator<Integer> {
     @Override
-    public Integer apply(Integer integer, Integer integer2) {
-        return 0;
+    public Integer apply(Integer x, Integer y) {
+        return Math.max(Math.abs(x), Math.abs(y));
     }
 }
 
-class StringLengthMoreThan5 implements Predicate<String> {
-
+// Проверяет, что длина строки больше 5
+class LongStringFilter implements Predicate<String> {
     @Override
-    public boolean test(String s) {
-        return true;
+    public boolean test(String value) {
+        return value.length() > 5;
     }
 }
 
-
-// Проверяет, является ли число квадратом
-class IsNumberASquareOfAnotherNumber implements Predicate<Integer> {
-
+// Проверяет, является ли число полным квадратом
+class SquareNumberChecker implements Predicate<Integer> {
     @Override
-    public boolean test(Integer integer) {
-        return true;
+    public boolean test(Integer number) {
+        int root = (int) Math.sqrt(number);
+        return root * root == number;
     }
 }
 
-// Возвращает четные числа, начиная с from включительно, если в from нечетное число, то начиная с первого четного с from
-class EvenNumberSupplier implements Supplier<Integer> {
+// Генератор чётных чисел, начиная с указанного
+class NextEvenGenerator implements Supplier<Integer> {
+    private int next;
 
-    public EvenNumberSupplier(int from) {}
+    public NextEvenGenerator(int start) {
+        this.next = (start % 2 == 0) ? start : start + 1;
+    }
 
     @Override
     public Integer get() {
-        return 0;
+        int current = next;
+        next += 2;
+        return current;
     }
 }
 
+// Тесты для функциональных интерфейсов
 public class FunctionalInterfacesTest {
 
     @Test
-    public void unaryOperatorTest() {
-        var result = new ArrayList<>(List.of("abC", "edf"));
-        result.replaceAll(new ToUpperCaseOperator());
-        Assertions.assertEquals(List.of("ABC", "EDF"), result);
+    public void upperCaseOperatorTest() {
+        var input = new ArrayList<>(List.of("abC", "edf"));
+        input.replaceAll(new Capitalizer());
+        Assertions.assertEquals(List.of("ABC", "EDF"), input);
     }
 
     @Test
-    public void binaryOperatorTest() {
-        var result = Stream.of(2, 3, 1, -10).reduce(4, new AbsMaxOperator());
-        Assertions.assertEquals(10, result);
+    public void maxAbsOperatorTest() {
+        var reduced = Stream.of(2, 3, 1, -10).reduce(4, new AbsoluteMaxFinder());
+        Assertions.assertEquals(10, reduced);
     }
 
     @Test
-    public void predicateTest() {
-        Assertions.assertEquals(
-                Stream.of("a", "bb", "ccc", "1234567", "aaaaaaaaa").filter(new StringLengthMoreThan5()).toList(),
-                List.of("1234567", "aaaaaaaaa")
-        );
+    public void predicateImplementationsTest() {
+        var longStrings = Stream.of("a", "bb", "ccc", "1234567", "aaaaaaaaa")
+                .filter(new LongStringFilter())
+                .toList();
+        Assertions.assertEquals(List.of("1234567", "aaaaaaaaa"), longStrings);
 
-        Assertions.assertEquals(
-                Stream.of(1, 4, 5, 10, 16, 25).filter(new IsNumberASquareOfAnotherNumber()).toList(),
-                List.of(1, 4, 16, 25)
-        );
+        var squares = Stream.of(1, 4, 5, 10, 16, 25)
+                .filter(new SquareNumberChecker())
+                .toList();
+        Assertions.assertEquals(List.of(1, 4, 16, 25), squares);
     }
 
     @Test
-    public void supplierTest() {
-        var evenNumberSupplier = new EvenNumberSupplier(0);
-        Stream.of(0, 2, 4, 6, 8, 10).forEach(number -> Assertions.assertEquals(number, evenNumberSupplier.get()));
+    public void evenNumberSupplierTest() {
+        var generator = new NextEvenGenerator(0);
+        Stream.of(0, 2, 4, 6, 8, 10).forEach(n -> Assertions.assertEquals(n, generator.get()));
 
-        var anotherSupplier = new EvenNumberSupplier(11);
-        Stream.of(12, 14, 16, 18, 20, 22).forEach(number -> Assertions.assertEquals(number, anotherSupplier.get()));
+        var another = new NextEvenGenerator(11);
+        Stream.of(12, 14, 16, 18, 20, 22).forEach(n -> Assertions.assertEquals(n, another.get()));
     }
-
 }
