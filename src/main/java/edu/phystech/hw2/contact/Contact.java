@@ -1,15 +1,13 @@
 package edu.phystech.hw2.contact;
 
+public class InvalidContactFieldException extends RuntimeException {
+    private final String fieldName;
 
-record Contact(String username, String email) {
-    public static final String UNKNOWN_EMAIL = "unknown";
-
-    Contact {
-        // здесь должна быть валидация
+    public InvalidContactFieldException(String fieldName) {
+        this.fieldName = fieldName;
     }
 
-    Contact(String username) { this(null, null); }
-
-
-    public int compareTo(Contact o) {return 0;}
+    public String getFieldName() {
+        return fieldName;
+    }
 }

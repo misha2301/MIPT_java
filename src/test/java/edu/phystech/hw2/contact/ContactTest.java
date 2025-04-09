@@ -6,100 +6,39 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
+
 public class ContactTest {
 
     @Test
-    public void contactCreationTest() {
+    public void justWorks() {
+
         Assertions.assertDoesNotThrow(() -> {
-            Person alpha = new Person("username", "username@gmail.com");
-            Person beta = new Person("123", "123@gmail.com");
+            Contact first = new Contact("username", "username@gmail.com");
+            Contact second = new Contact("123", "123@gmail.com");
 
-            Person noEmail = new Person("noEmailProvided");
-            Assertions.assertEquals(Person.DEFAULT_EMAIL, noEmail.getEmail());
+            Contact withoutEmail = new Contact("withoutEmail");
+            Assertions.assertEquals(Contact.UNKNOWN_EMAIL, withoutEmail.email());
         });
+
     }
 
     @Test
-    public void invalidInputTest() {
-        var ex = Assertions.assertThrows(FieldValidationException.class, () -> new Person("   ", "123@gmail.com"));
-        Assertions.assertEquals("username", ex.getInvalidField());
-
-        ex = Assertions.assertThrows(FieldValidationException.class, () -> new Person("   1", "123@mail.ru"));
-        Assertions.assertEquals("email", ex.getInvalidField());
-
-        ex = Assertions.assertThrows(FieldValidationException.class, () -> new Person("   ", ""));
-        Assertions.assertEquals("username", ex.getInvalidField());
+    public void validationTest() {
+        var exception =
+                Assertions.assertThrows(InvalidContactFieldException.class, () -> new Contact("   ", "123@gmai.com"));
+        Assertions.assertEquals("username", exception.getFieldName());
+        exception =
+                Assertions.assertThrows(InvalidContactFieldException.class, () -> new Contact("   1", "123@mai.ru"));
+        Assertions.assertEquals("email", exception.getFieldName());
+        exception = Assertions.assertThrows(InvalidContactFieldException.class, () -> new Contact("   ", ""));
+        Assertions.assertEquals("username", exception.getFieldName());
     }
 
     @Test
-    public void sortingTest() {
-        var sortedNames = Stream.of(new Person("AFD"), new Person("a"), new Person("zZ"))
-                .sorted(Person::compareTo)
-                .map(Person::getUsername)
-                .toList();
-
-        Assertions.assertEquals(List.of("a", "zZ", "AFD"), sortedNames);
-        Assertions.assertInstanceOf(Comparable.class, new Person("AFD"));
-    }
-}
-
-class Person implements Comparable<Person> {
-    public static final String DEFAULT_EMAIL = "unknown@gmail.com";
-
-    private final String name;
-    private final String emailAddress;
-
-    Person(String name) {
-        this(name, DEFAULT_EMAIL);
-    }
-
-    Person(String name, String emailAddress) {
-        checkName(name);
-        checkEmail(emailAddress);
-
-        this.name = name.trim();
-        this.emailAddress = emailAddress.trim();
-    }
-
-    private void checkName(String input) {
-        if (input == null || input.trim().isEmpty()) {
-            throw new FieldValidationException("username");
-        }
-    }
-
-    private void checkEmail(String input) {
-        if (input == null || input.trim().isEmpty()) {
-            throw new FieldValidationException("email");
-        }
-
-        String pattern = "^[A-Za-z0-9+_.-]+@gmail\\.com$";
-        if (!input.trim().matches(pattern)) {
-            throw new FieldValidationException("email");
-        }
-    }
-
-    String getUsername() {
-        return name;
-    }
-
-    String getEmail() {
-        return emailAddress;
-    }
-
-    @Override
-    public int compareTo(Person other) {
-        return Integer.compare(this.name.length(), other.name.length());
-    }
-}
-
-class FieldValidationException extends RuntimeException {
-    private final String invalidField;
-
-    FieldValidationException(String field) {
-        this.invalidField = field;
-    }
-
-    String getInvalidField() {
-        return invalidField;
+    public void compareTest() {
+        var result = Stream.of(new Contact("AFD"), new Contact("a"), new Contact("zZ")).sorted(Contact::compareTo)
+                .map(Contact::username).toList();
+        Assertions.assertEquals(List.of("a", "zZ", "AFD"), result);
+        Assertions.assertInstanceOf(Comparable.class, new Contact("AFD"));
     }
 }
