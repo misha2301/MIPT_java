@@ -1,13 +1,21 @@
 package edu.phystech.hw2.contact;
 
-public class InvalidContactFieldException extends RuntimeException {
-    private final String fieldName;
+public record Contact(String username, String email, String phoneNumber) implements Comparable<Contact> {
 
-    public InvalidContactFieldException(String fieldName) {
-        this.fieldName = fieldName;
+    public Contact {
+        if (username == null || username.isBlank()) {
+            throw new InvalidContactFieldException("username");
+        }
+        if (email == null || !email.endsWith("@gmail.com")) {
+            throw new InvalidContactFieldException("email");
+        }
+        if (phoneNumber == null || phoneNumber.isBlank()) {
+            throw new InvalidContactFieldException("phoneNumber");
+        }
     }
 
-    public String getFieldName() {
-        return fieldName;
+    @Override
+    public int compareTo(Contact other) {
+        return Integer.compare(this.username.length(), other.username.length());
     }
 }

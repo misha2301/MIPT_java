@@ -15,7 +15,15 @@ import org.junit.jupiter.api.Assertions;
 class Capitalizer implements UnaryOperator<String> {
     @Override
     public String apply(String input) {
-        return input.toUpperCase();
+        StringBuilder result = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            if (c >= 'a' && c <= 'z') {
+                result.append((char) (c - ('a' - 'A')));
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
     }
 }
 

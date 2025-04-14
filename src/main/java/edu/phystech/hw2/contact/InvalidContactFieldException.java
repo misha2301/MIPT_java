@@ -1,12 +1,14 @@
 package edu.phystech.hw2.contact;
 
 public class InvalidContactFieldException extends RuntimeException {
-    private String fieldName;
+    private final String fieldName;
 
-    public String getFieldName() {
-        return null;
+    public InvalidContactFieldException(String fieldName) {
+        super("Invalid value in field: " + fieldName);
+        this.fieldName = fieldName;
     }
 
-    InvalidContactFieldException(String fieldName) {
+    public String getFieldName() {
+        return fieldName;
     }
 }
