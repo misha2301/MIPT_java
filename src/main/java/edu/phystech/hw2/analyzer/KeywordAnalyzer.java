@@ -14,8 +14,9 @@ public abstract class KeywordAnalyzer implements TextAnalyzer {
 
     @Override
     public Label processText(String text) {
-        for (String keyword : keywords) {
-            if (text.contains(keyword)) {
+        var words = text.split(" ");
+        for (String word : words) {
+            if (keywords.contains(word)) {
                 return label;
             }
         }

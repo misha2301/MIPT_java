@@ -1,5 +1,6 @@
 package edu.phystech.hw2;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BinaryOperator;
@@ -11,98 +12,116 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-// Преобразует строку в верхний регистр
-class Capitalizer implements UnaryOperator<String> {
+class ToUpperCaseOperator implements UnaryOperator<String> {
     @Override
-    public String apply(String input) {
-        StringBuilder result = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c >= 'a' && c <= 'z') {
-                result.append((char) (c - ('a' - 'A')));
-            } else {
-                result.append(c);
+    public String apply(String s) {
+        int step = 'a' - 'A';
+        var letters = s.toCharArray();
+        for (int i = 0; i < letters.length; i++) {
+            if ('a' <= letters[i] && letters[i] <= 'z') {
+                letters[i] = (char) (letters[i] - step);
             }
         }
-        return result.toString();
+        return String.valueOf(letters);
     }
 }
 
-// Возвращает большее абсолютное значение из двух чисел
-class AbsoluteMaxFinder implements BinaryOperator<Integer> {
+// Возвращает модуль максимума из двух модулей чисел
+class AbsMaxOperator implements BinaryOperator<Integer> {
+
     @Override
-    public Integer apply(Integer x, Integer y) {
-        return Math.max(Math.abs(x), Math.abs(y));
+    public Integer apply(Integer integer, Integer integer2) {
+        int abs1 = integer < 0 ? -integer : integer;
+        int abs2 = integer2 < 0 ? -integer2 : integer2;
+        return abs1 > abs2 ? abs1 : abs2;
     }
 }
 
-// Проверяет, что длина строки больше 5
-class LongStringFilter implements Predicate<String> {
+class StringLengthMoreThan5 implements Predicate<String> {
+
     @Override
-    public boolean test(String value) {
-        return value.length() > 5;
+    public boolean test(String s) {
+        return (s != null) && s.length() > 5;
     }
 }
 
-// Проверяет, является ли число полным квадратом
-class SquareNumberChecker implements Predicate<Integer> {
+
+// Проверяет, является ли число квадратом
+class IsNumberASquareOfAnotherNumber implements Predicate<Integer> {
+
     @Override
-    public boolean test(Integer number) {
-        int root = (int) Math.sqrt(number);
-        return root * root == number;
+    public boolean test(Integer integer) {
+        if (integer < 0) {
+            return false;
+        }
+        for (int i = 0; i <= integer; i++) {
+            int square = i * i;
+            if (square == integer) {
+                return true;
+            }
+            if (square > integer) {
+                break;
+            }
+        }
+        return false;
     }
 }
 
-// Генератор чётных чисел, начиная с указанного
-class NextEvenGenerator implements Supplier<Integer> {
-    private int next;
+// Возвращает четные числа, начиная с from включительно, если в from нечетное число, то начиная с первого четного с from
+class EvenNumberSupplier implements Supplier<Integer> {
 
-    public NextEvenGenerator(int start) {
-        this.next = (start % 2 == 0) ? start : start + 1;
+    private int current;
+
+    public EvenNumberSupplier(int from) {
+        if (from % 2 == 1) {
+            from++;
+        }
+        current = from;
     }
 
     @Override
     public Integer get() {
-        int current = next;
-        next += 2;
-        return current;
+        int res = current;
+        current += 2;
+        return res;
     }
 }
 
-// Тесты для функциональных интерфейсов
 public class FunctionalInterfacesTest {
 
     @Test
-    public void upperCaseOperatorTest() {
-        var input = new ArrayList<>(List.of("abC", "edf"));
-        input.replaceAll(new Capitalizer());
-        Assertions.assertEquals(List.of("ABC", "EDF"), input);
+    public void unaryOperatorTest() {
+        var result = new ArrayList<>(List.of("abC", "edf"));
+        result.replaceAll(new ToUpperCaseOperator());
+        Assertions.assertEquals(List.of("ABC", "EDF"), result);
     }
 
     @Test
-    public void maxAbsOperatorTest() {
-        var reduced = Stream.of(2, 3, 1, -10).reduce(4, new AbsoluteMaxFinder());
-        Assertions.assertEquals(10, reduced);
+    public void binaryOperatorTest() {
+        var result = Stream.of(2, 3, 1, -10).reduce(4, new AbsMaxOperator());
+        Assertions.assertEquals(10, result);
     }
 
     @Test
-    public void predicateImplementationsTest() {
-        var longStrings = Stream.of("a", "bb", "ccc", "1234567", "aaaaaaaaa")
-                .filter(new LongStringFilter())
-                .toList();
-        Assertions.assertEquals(List.of("1234567", "aaaaaaaaa"), longStrings);
+    public void predicateTest() {
+        Assertions.assertEquals(
+                Stream.of("a", "bb", "ccc", "1234567", "aaaaaaaaa").filter(new StringLengthMoreThan5()).toList(),
+                List.of("1234567", "aaaaaaaaa")
+        );
 
-        var squares = Stream.of(1, 4, 5, 10, 16, 25)
-                .filter(new SquareNumberChecker())
-                .toList();
-        Assertions.assertEquals(List.of(1, 4, 16, 25), squares);
+        Assertions.assertEquals(
+                Stream.of(1, 4, 5, 10, 16, 25).filter(new IsNumberASquareOfAnotherNumber()).toList(),
+                List.of(1, 4, 16, 25)
+        );
     }
 
     @Test
-    public void evenNumberSupplierTest() {
-        var generator = new NextEvenGenerator(0);
-        Stream.of(0, 2, 4, 6, 8, 10).forEach(n -> Assertions.assertEquals(n, generator.get()));
+    public void supplierTest() {
+        var evenNumberSupplier = new EvenNumberSupplier(0);
+        Stream.of(0, 2, 4, 6, 8, 10).forEach(number -> Assertions.assertEquals(number, evenNumberSupplier.get()));
 
-        var another = new NextEvenGenerator(11);
-        Stream.of(12, 14, 16, 18, 20, 22).forEach(n -> Assertions.assertEquals(n, another.get()));
+        var anotherSupplier = new EvenNumberSupplier(11);
+        Stream.of(12, 14, 16, 18, 20, 22).forEach(number -> Assertions.assertEquals(number, anotherSupplier.get()));
     }
+
 }
