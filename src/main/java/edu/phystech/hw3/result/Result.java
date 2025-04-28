@@ -8,4 +8,6 @@ public sealed interface Result<T> permits Success, Failure {
     T getOrDefault(T defaultValue);
     Throwable getExceptionOrNull();
     <R> Result<R> map(Function<T, R> transform);
+    T value();
+    Throwable e();
 }

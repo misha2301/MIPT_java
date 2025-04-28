@@ -11,7 +11,11 @@ import org.junit.jupiter.api.Test;
 public class InverseMapKeyValuesTest {
 
     public static <K, V> Map<V, Collection<K>> inverse(Map<? extends K, ? extends V> map) {
-        return null;
+        Map<V, Collection<K>> newMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            newMap.computeIfAbsent(value, v -> new ArrayList<>()).add(key);  // если нет ключа value, то создаем там новый список
+        });
+        return newMap;
     }
 
     @Test
@@ -48,4 +52,3 @@ public class InverseMapKeyValuesTest {
 
     }
 }
-

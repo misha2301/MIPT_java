@@ -2,9 +2,6 @@ package edu.phystech.hw3.result;
 
 import java.util.function.Function;
 
-/**
- * @author kzlv4natoly
- */
 public final class Success<T> implements Result<T> {
     private final T value;
     public Success(T value) {
@@ -18,12 +15,12 @@ public final class Success<T> implements Result<T> {
 
     @Override
     public boolean isSuccess() {
-        return false;
+        return true;
     }
 
     @Override
     public T getOrDefault(T defaultValue) {
-        return null;
+        return value;
     }
 
     @Override
@@ -33,7 +30,10 @@ public final class Success<T> implements Result<T> {
 
     @Override
     public <R> Result<R> map(Function<T, R> transform) {
-        return null;
+        try {
+            return new Success<>(transform.apply(value));
+        } catch (Throwable e) {
+            return new Failure<>(e);
+        }
     }
-
 }

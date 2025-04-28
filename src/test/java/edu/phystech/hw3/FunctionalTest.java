@@ -1,9 +1,3 @@
-package edu.phystech.hw3;
-
-import java.util.List;
-import java.util.function.Function;
-
-import edu.phystech.hw3.shape.Disk;
 import edu.phystech.hw3.shape.Shape;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,6 +19,8 @@ public class FunctionalTest {
 //        нужно подправить сигнутру метода map, чтобы этот код компилировался и отрабатывал
 //        List<Double> expected = List.of(new Disk(1).getArea(), new Disk(2).getArea());
 //        Assertions.assertEquals(expected, Functional.map(diskList, getArea));
+        List<Double> expected = List.of(new Disk(1).getArea(), new Disk(2).getArea());
+        Assertions.assertEquals(expected, Functional.map(diskList, getArea));
     }
 
     @Test
