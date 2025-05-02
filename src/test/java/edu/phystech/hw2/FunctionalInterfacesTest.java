@@ -15,7 +15,14 @@ import org.junit.jupiter.api.Assertions;
 class ToUpperCaseOperator implements UnaryOperator<String> {
     @Override
     public String apply(String s) {
-        return s;
+        int step = 'a' - 'A';
+        var letters = s.toCharArray();
+        for (int i = 0; i < letters.length; i++) {
+            if ('a' <= letters[i] && letters[i] <= 'z') {
+                letters[i] = (char) (letters[i] - step);
+            }
+        }
+        return String.valueOf(letters);
     }
 }
 
@@ -24,7 +31,9 @@ class AbsMaxOperator implements BinaryOperator<Integer> {
 
     @Override
     public Integer apply(Integer integer, Integer integer2) {
-        return 0;
+        int abs1 = integer < 0 ? -integer : integer;
+        int abs2 = integer2 < 0 ? -integer2 : integer2;
+        return abs1 > abs2 ? abs1 : abs2;
     }
 }
 
@@ -32,7 +41,7 @@ class StringLengthMoreThan5 implements Predicate<String> {
 
     @Override
     public boolean test(String s) {
-        return true;
+        return (s != null) && s.length() > 5;
     }
 }
 
@@ -42,18 +51,39 @@ class IsNumberASquareOfAnotherNumber implements Predicate<Integer> {
 
     @Override
     public boolean test(Integer integer) {
-        return true;
+        if (integer < 0) {
+            return false;
+        }
+        for (int i = 0; i <= integer; i++) {
+            int square = i * i;
+            if (square == integer) {
+                return true;
+            }
+            if (square > integer) {
+                break;
+            }
+        }
+        return false;
     }
 }
 
 // Возвращает четные числа, начиная с from включительно, если в from нечетное число, то начиная с первого четного с from
 class EvenNumberSupplier implements Supplier<Integer> {
 
-    public EvenNumberSupplier(int from) {}
+    private int current;
+
+    public EvenNumberSupplier(int from) {
+        if (from % 2 == 1) {
+            from++;
+        }
+        current = from;
+    }
 
     @Override
     public Integer get() {
-        return 0;
+        int res = current;
+        current += 2;
+        return res;
     }
 }
 

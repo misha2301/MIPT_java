@@ -1,32 +1,7 @@
 package edu.phystech.hw2;
 
-import java.util.Objects;
-
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-
-class IntHolder {
-
-    private int value;
-
-    public int getValue() {
-        return 0;
-    }
-
-    public void swap(IntHolder other) {}
-
-    public IntHolder(int value) {}
-
-    public static IntHolder valueOf(int x) { return null; }
-
-    public IntHolder plus(IntHolder rhv) { return null; }
-
-    public IntHolder minus(IntHolder rhv) { return null; }
-
-    public IntHolder times(IntHolder rhv) { return null; }
-    public IntHolder div(IntHolder rhv) { return null; }
-
-}
+import org.junit.jupiter.api.Test;
 
 public class IntHolderTest {
 
@@ -44,7 +19,6 @@ public class IntHolderTest {
 
         Assertions.assertEquals(10, left.getValue());
         Assertions.assertEquals(12, right.getValue());
-
     }
 
     @Test
@@ -67,7 +41,5 @@ public class IntHolderTest {
         Assertions.assertEquals(8, left.minus(right).getValue());
         Assertions.assertEquals(40, left.times(right).times(right).getValue());
         Assertions.assertEquals(5, left.div(right).getValue());
-
     }
-
 }
