@@ -1,5 +1,4 @@
 package edu.phystech.hw4;
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -89,7 +88,6 @@ public class StepperTest {
                     } catch (Exception e) {}
                 })).collect(Collectors.toList());
 
-        // wait completion of all futures
         for (var future : futures) {
             future.get();
         }
