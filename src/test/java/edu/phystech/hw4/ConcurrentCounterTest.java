@@ -17,13 +17,13 @@ import org.junit.jupiter.api.Test;
  * @author kzlv4natoly
  */
 class ConcurrentCounter {
-    private long value = 0;
+    private volatile long value = 0;
 
     synchronized void increment() {
         value++;
     }
 
-    synchronized long getValue() {
+    long getValue() {
         return value;
     }
 }
