@@ -1,5 +1,6 @@
 package edu.phystech.hw5;
 
+import java.lang.reflect.Field;
 import edu.phystech.hw5.annotation.validation.NotBlank;
 import edu.phystech.hw5.annotation.validation.Size;
 import edu.phystech.hw5.exception.ValidationException;
@@ -13,7 +14,41 @@ import org.junit.jupiter.api.Test;
 public class ValidatorTest {
 
     private Validator validator = object -> {
+        Class<?> clazz = object.getClass();
+        for (Field field : clazz.getDeclaredFields()) {
+            if (!field.getType().equals(String.class)) continue;
+
+            field.setAccessible(true);
+            String value;
+            try {
+                value = (String) field.get(object);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+
+            NotBlank notBlank = field.getAnnotation(NotBlank.class);
+            if (notBlank != null) {
+                if (value == null || value.trim().isEmpty()) {
+                    String message = notBlank.message().isEmpty()
+                            ? "Field must not be blank"
+                            : notBlank.message();
+                    throw new ValidationException(message);
+                }
+            }
+
+            Size size = field.getAnnotation(Size.class);
+            if (size != null) {
+                int length = value != null ? value.length() : 0;
+                if (length < size.min() || length > size.max()) {
+                    String message = size.message().isEmpty()
+                            ? "Field length must be between " + size.min() + " and " + size.max()
+                            : size.message();
+                    throw new ValidationException(message);
+                }
+            }
+        }
     };
+
 
     @Test
     void notBlankWorks() {
